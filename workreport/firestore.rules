@@ -1,0 +1,231 @@
+rules_version = '2';
+
+service cloud.firestore {
+
+    match /databases/{database}/documents {
+
+
+        /* ====================================
+           FUNCTIONS
+        ==================================== */
+
+        function signedIn() {
+
+            return request.auth != null;
+
+        }
+
+
+        function isUser(userId) {
+
+            return signedIn()
+                && request.auth.uid == userId;
+
+        }
+
+
+        function groupExists(groupId) {
+
+            return exists(
+                /databases/$(database)
+                /documents/groups/$(groupId)
+            );
+
+        }
+
+
+        function isGroupMember(groupId) {
+
+            return signedIn()
+                && groupExists(groupId)
+                && request.auth.uid in
+                    get(
+                        /databases/$(database)
+                        /documents/groups/$(groupId)
+                    ).data.members;
+
+        }
+
+
+        function isGroupOwner(groupId) {
+
+            return signedIn()
+                && groupExists(groupId)
+                && get(
+                    /databases/$(database)
+                    /documents/groups/$(groupId)
+                ).data.ownerId
+                    == request.auth.uid;
+
+        }
+
+
+        /* ====================================
+           USERS
+        ==================================== */
+
+        match /users/{userId} {
+
+            allow read:
+                if signedIn();
+
+            allow create:
+                if isUser(userId);
+
+            allow update:
+                if isUser(userId);
+
+            allow delete:
+                if isUser(userId);
+
+        }
+
+
+        /* ====================================
+           GROUPS
+        ==================================== */
+
+        match /groups/{groupId} {
+
+
+            /* -------------------------------
+               CREATE GROUP
+            -------------------------------- */
+
+            allow create:
+                if signedIn()
+
+                && request.resource.data.ownerId
+                    == request.auth.uid
+
+                && request.resource.data.members.size()
+                    == 1
+
+                && request.auth.uid
+                    in request.resource.data.members;
+
+
+            /* -------------------------------
+               READ GROUP
+            -------------------------------- */
+
+            allow get, list:
+                if isGroupMember(groupId);
+
+
+            /* -------------------------------
+               UPDATE GROUP
+            -------------------------------- */
+
+            allow update:
+                if isGroupOwner(groupId)
+
+                || (
+
+                    isGroupMember(groupId)
+
+                    && request.resource.data.ownerId
+                        == resource.data.ownerId
+
+                    && request.resource.data.name
+                        == resource.data.name
+
+                    && request.resource.data.code
+                        == resource.data.code
+
+                    && request.resource.data.members
+                        == resource.data.members
+
+                );
+
+
+            /* -------------------------------
+               DELETE GROUP
+            -------------------------------- */
+
+            allow delete:
+                if isGroupOwner(groupId);
+
+
+            /* =================================
+               TASKS
+            ================================= */
+
+            match /tasks/{taskId} {
+
+
+                /* -----------------------------
+                   READ TASK
+                ------------------------------ */
+
+                allow get, list:
+                    if isGroupMember(groupId);
+
+
+                /* -----------------------------
+                   CREATE TASK
+                ------------------------------ */
+
+                allow create:
+                    if isGroupMember(groupId)
+
+                    && request.resource.data.createdBy
+                        == request.auth.uid;
+
+
+                /* -----------------------------
+                   UPDATE TASK
+                ------------------------------ */
+
+                allow update:
+                    if isGroupMember(groupId)
+
+                    && (
+
+                        resource.data.createdBy
+                            == request.auth.uid
+
+                        ||
+
+                        isGroupOwner(groupId)
+
+                    );
+
+
+                /* -----------------------------
+                   DELETE TASK
+                ------------------------------ */
+
+                allow delete:
+                    if isGroupOwner(groupId)
+
+                    ||
+
+                    (
+
+                        isGroupMember(groupId)
+
+                        && resource.data.createdBy
+                            == request.auth.uid
+
+                    );
+
+            }
+
+        }
+
+
+        /* ====================================
+           DENY EVERYTHING ELSE
+        ==================================== */
+
+        match /{document=**} {
+
+            allow read, write:
+                if false;
+
+        }
+
+    }
+
+}
