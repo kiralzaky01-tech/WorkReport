@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Group - WorkReport</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <h2>
+                WorkReport
+            </h2>
+
+            <p>
+                Laporan Kerja
+            </p>
+
+        </div>
+
+
+        <nav>
+
+            <a href="dashboard.html">
+                📊 Dashboard
+            </a>
+
+            <a class="active">
+                👥 Group
+            </a>
+
+            <button
+                onclick="logout()"
+            >
+                🚪 Logout
+            </button>
+
+        </nav>
+
+    </aside>
+
+
+    <main class="main">
+
+
+        <header class="topbar">
+
+            <div>
+
+                <a
+                    href="dashboard.html"
+                    class="back"
+                >
+                    ← Kembali
+                </a>
+
+                <h1 id="groupName">
+                    Memuat...
+                </h1>
+
+                <p id="groupCode">
+                    Memuat...
+                </p>
+
+            </div>
+
+        </header>
+
+
+        <!-- =================================
+             GROUP INFO
+        ================================== -->
+
+        <section class="statistics">
+
+            <div class="stat-card">
+
+                <p>
+                    Anggota
+                </p>
+
+                <h2 id="memberCount">
+                    0
+                </h2>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <p>
+                    Total Pekerjaan
+                </p>
+
+                <h2 id="taskCount">
+                    0
+                </h2>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <p>
+                    Belum Selesai
+                </p>
+
+                <h2 id="pendingCount">
+                    0
+                </h2>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <p>
+                    Selesai
+                </p>
+
+                <h2 id="doneCount">
+                    0
+                </h2>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================
+             TAMBAH PEKERJAAN
+        ================================== -->
+
+        <section class="panel">
+
+            <div class="section-title">
+
+                <div>
+
+                    <h2>
+                        Tambahkan Kerja
+                    </h2>
+
+                    <p>
+                        Pekerjaan ini akan terlihat oleh semua anggota grup.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <form id="taskForm">
+
+
+                <div class="form-grid">
+
+
+                    <div class="input-group">
+
+                        <label>
+                            Tanggal
+                        </label>
+
+                        <input
+                            type="date"
+                            id="taskDate"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label>
+                            Batas Pengumpulan
+                        </label>
+
+                        <input
+                            type="date"
+                            id="taskDeadline"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="input-group full">
+
+                        <label>
+                            Keterangan Pekerjaan
+                        </label>
+
+                        <textarea
+                            id="taskDescription"
+                            placeholder="Tuliskan pekerjaan..."
+                            required
+                        ></textarea>
+
+                    </div>
+
+
+                </div>
+
+
+                <button
+                    class="btn-primary"
+                    type="submit"
+                >
+                    + Tambahkan Kerja
+                </button>
+
+
+                <p id="taskMessage"></p>
+
+
+            </form>
+
+        </section>
+
+
+        <!-- =================================
+             ANGGOTA
+        ================================== -->
+
+        <section class="panel">
+
+            <div class="section-title">
+
+                <h2>
+                    Anggota Grup
+                </h2>
+
+            </div>
+
+
+            <div
+                id="memberList"
+                class="member-list"
+            >
+
+                Memuat...
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================
+             PEKERJAAN
+        ================================== -->
+
+        <section class="panel">
+
+            <div class="section-title">
+
+                <h2>
+                    Pekerjaan Grup
+                </h2>
+
+            </div>
+
+
+            <div
+                id="taskList"
+            >
+
+                Memuat...
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <script
+        type="module"
+        src="js/group.js"
+    ></script>
+
+
+    <script
+        type="module"
+        src="js/auth.js"
+    ></script>
+
+</body>
+
+</html>
